@@ -27,6 +27,7 @@ Adafruit_USBD_MSC usb_msc;                  		// USB Mass Storage object
 
 bool fileActive = false;				//True =  a file is open (reading level, playing audio) False = file not open, available for use
 
+
 #define LCD_WIDTH  240
 #define LCD_HEIGHT 240
 
@@ -124,8 +125,8 @@ void gamebadge3init(bool remapAudio) {				//Sets up gamebadge and a bunch of oth
 	//Serial.print("JEDEC ID: 0x"); Serial.println(flash.getJEDECID(), HEX);
 	//Serial.print("Flash size: "); Serial.print(flash.size() / 1024); Serial.println(" KB");
 
-	st7789_init(&lcd_config, 240, 240);			//Set up LCD for great justice
-	st7789_setRotation(1);						//Ribbon cable on left side of display
+	st7789_init(&lcd_config, LCD_WIDTH, LCD_HEIGHT);			//Set up LCD for great justice
+	// st7789_setRotation(3);						//Ribbon cable on left side of display - (done in st7789_init)
 	
 	gpio_init(15);								//Pinout for scope timing checks
 	gpio_set_dir(15, GPIO_OUT);
@@ -1116,7 +1117,7 @@ void LCDlogic() {
 			if (dma_channel_is_busy(lastDMA) == false) {		//if DMA is running, let it finish
 				gpio_put(27, 1);				//For scope timing
 				isRendering = true;
-				st7789_setAddressWindow(0, 0, 240, 240);	//Set entire LCD for drawing
+				st7789_setAddressWindow(0, 0, LCD_WIDTH, LCD_HEIGHT);	//Set entire LCD for drawing
 				st7789_ramwr();                       		//Switch to RAM writing mode dawg	
 
 				fineYsubCount = 0;						//This is stuff we used to setup in sendframe
@@ -1310,7 +1311,7 @@ void dmaLCD(int whatChannel, const void* data, int whatSize) {
 //Renders tiles and sprites and DMA's the data to the ST7789 LCD. Takes about 15ms. Core0 can do other stuff while this happens, as long as it doesn't access video memory (else tearing can occur)
 void sendFrame() {								//This is executed by Core1. Core0 can do other stuff during this time
 	
-	st7789_setAddressWindow(0, 0, 240, 240);	//Set entire LCD for drawing
+	st7789_setAddressWindow(0, 0, LCD_WIDTH, LCD_HEIGHT);	//Set entire LCD for drawing
 	st7789_ramwr();                       		//Switch to RAM writing mode dawg
 
 	int whichBuffer = 0;						//We have 2 row buffers. We draw one, send via DMA, and draw next while DMA is running

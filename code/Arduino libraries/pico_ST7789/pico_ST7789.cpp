@@ -20,6 +20,10 @@ bool st7789_data_mode = false;
 
 #define ST77XX_MADCTL_RGB 0x00
 
+#define LCD_OFFSET_X 40
+#define LCD_OFFSET_Y 0
+#define LCD_ROTATION 3
+
 uint8_t _xstart;
 uint8_t _ystart;
 
@@ -30,7 +34,8 @@ void st7789_init(const struct st7789_config* config, uint16_t width, uint16_t he
     st7789_height = height;
 
     spi_init(st7789_cfg.spi, 125 * 1000 * 1000);					//Set SPI to max speed, CPU must be 125Hz
-	
+    
+    
     if (st7789_cfg.gpio_cs > -1) {
         spi_set_format(st7789_cfg.spi, 8, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
     } else {
@@ -73,7 +78,7 @@ void st7789_init(const struct st7789_config* config, uint16_t width, uint16_t he
     st7789_cmd(0x11, NULL, 0);
     sleep_ms(10);
 
-	st7789_setRotation(1);
+	st7789_setRotation(LCD_ROTATION);
 
     // COLMOD (3Ah): Interface Pixel Format
     // - RGB interface color format     = 65K of RGB interface
@@ -97,6 +102,8 @@ void st7789_init(const struct st7789_config* config, uint16_t width, uint16_t he
     st7789_cmd(0x13, NULL, 0);
     sleep_ms(10);
 
+    st7789_razmem() ;
+    
     // DISPON (29h): Display On
     st7789_cmd(0x29, NULL, 0);
     sleep_ms(10);
@@ -148,28 +155,30 @@ void st7789_cmd(uint8_t cmd, const uint8_t* data, size_t len)
     sleep_us(1);
 }
 
-void st7789_caset(uint16_t xs, uint16_t xe)
+
+void st7789_rascaset(uint8_t cmd, uint16_t xs, uint16_t xe, uint16_t offset)
 {
 	uint8_t data[4];
+        uint16_t _tmp ;
 	
-	data[0] = xs >> 8;
-	data[1] = xs & 0xFF;
-	data[2] = xe >> 8;
-	data[3] = xe & 0xFF;
+        _tmp = xs+offset ;
+	data[0] = _tmp >> 8;
+	data[1] = _tmp & 0xFF;
+        _tmp = xe+offset ;
+	data[2] = _tmp >> 8;
+	data[3] = _tmp & 0xFF;
 	
-    st7789_cmd(0x2a, data, sizeof(data));			// CASET (2Ah): Column Address Set
+        st7789_cmd(cmd, data, sizeof(data));			// CASET (2Ah): Column Address Set
 }
 
-void st7789_raset(uint16_t ys, uint16_t ye)
+inline void st7789_caset(uint16_t xs, uint16_t xe)
 {
-	uint8_t data[4];
-	
-	data[0] = ys >> 8;
-	data[1] = ys & 0xFF;
-	data[2] = ye >> 8;
-	data[3] = ye & 0xFF;
+        st7789_rascaset(0x2a, xs, xe, LCD_OFFSET_X) ;
+}
 
-    st7789_cmd(0x2b, data, sizeof(data));			// RASET (2Bh): Row Address Set
+inline void st7789_raset(uint16_t ys, uint16_t ye)
+{
+        st7789_rascaset(0x2b, ys, ye, LCD_OFFSET_Y) ;
 }
 
 void st7789_ramwr()
@@ -245,5 +254,25 @@ void st7789_setAddressWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
 	st7789_caset(x, x + (w - 1));		 // Column addr set
 	st7789_raset(y, y + (h - 1)); 		// Row addr set
 
+}
+
+void st7789_razmem()
+{   
+    uint8_t data = 0;
+    uint16_t i ;
+#if LCD_OFFSET_X != 0
+        st7789_rascaset(0x2a, 0, LCD_OFFSET_X-1, 0) ;
+        st7789_rascaset(0x2b, 0, st7789_height-1, 0) ;
+        st7789_ramwr();
+        for (i=0; i<LCD_OFFSET_X*st7789_height; ++i)
+            spi_write_blocking(st7789_cfg.spi, &data, 1);     
+        sleep_us(1);
+        st7789_rascaset(0x2a, LCD_OFFSET_X+st7789_width, st7789_width+(2*LCD_OFFSET_X)-1, 0) ;
+        st7789_rascaset(0x2b, 0, st7789_height - 1, 0) ;
+        st7789_ramwr();
+        for (i=0; i<LCD_OFFSET_X*st7789_height; ++i)
+            spi_write_blocking(st7789_cfg.spi, &data, 1); 
+        sleep_us(1);
+#endif
 }
 

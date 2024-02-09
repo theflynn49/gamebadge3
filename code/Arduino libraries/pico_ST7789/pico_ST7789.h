@@ -29,6 +29,7 @@
 	void st7789_raset(uint16_t ys, uint16_t ye);
 	void st7789_setRotation(uint8_t which);
 	void st7789_setAddressWindow(uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+        void st7789_razmem();
 
 	//uint16_t st7789_width;
 	//uint16_t st7789_height;
