@@ -126,7 +126,7 @@ void gamebadge3init(bool remapAudio) {				//Sets up gamebadge and a bunch of oth
 	//Serial.print("Flash size: "); Serial.print(flash.size() / 1024); Serial.println(" KB");
 
 	st7789_init(&lcd_config, LCD_WIDTH, LCD_HEIGHT);			//Set up LCD for great justice
-	// st7789_setRotation(3);						//Ribbon cable on left side of display - (done in st7789_init)
+	// st7789_setRotation(1);						//Ribbon cable on left side of display - (done in st7789_init)
 	
 	gpio_init(15);								//Pinout for scope timing checks
 	gpio_set_dir(15, GPIO_OUT);
