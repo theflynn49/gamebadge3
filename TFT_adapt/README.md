@@ -11,9 +11,11 @@ I tried these up to now :
  - <url>https://fr.aliexpress.com/item/1005005933513340.html</url> (tested OK, is upside-down)
  - <url>https://fr.aliexpress.com/item/32858069771.html</url> (7-wires, do NOT work yet)
 
+Important note : make sure you use my version of gameBadgePico.cpp (as of 2024/02/24), which contains a modification to make the chinese TZT screen stable.
+I pushed this mod on both my branches of this repo.
+
 The gerber files should work for PCBway (still waiting for these to arrive)
 
 Have fun.
 
 This is pre-released, not fully tested, you have been warned.
-
