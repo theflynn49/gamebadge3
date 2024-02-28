@@ -25,6 +25,7 @@ Don't forget to do all this on the correct branch :
 <code>
 git clone https://github.com/theflynn49/gamebadge3.git
 git checkout ST7789_280x240
+  
 </code>
 
 
@@ -32,6 +33,8 @@ Warning : Games for GB3 must be compiled with
   - flash size=1MB / Sketch Size=1MB
   - CPU Speed = 125Mhz (important !)
   - USB Stack : Adafruit TinyUSB
+
+![DSC02983_s1](https://github.com/theflynn49/gamebadge3/assets/9721006/8da74c5c-58ae-41b0-9883-c14727476b0f)
 
 Have fun.
 jF
