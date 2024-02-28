@@ -20,9 +20,12 @@ bool st7789_data_mode = false;
 
 #define ST77XX_MADCTL_RGB 0x00
 
-#define LCD_OFFSET_X 40
-#define LCD_OFFSET_Y 0
-#define LCD_ROTATION 3
+#define SCR_WIDTH 320    // Beware some 280x240 screens are in fact 320x240 screens
+
+#define LCD_OFFSET_X ((SCR_WIDTH-240)/2) // set his to (screen width-240)/2, to set black bands left and right
+#define SCR_OFFSET_X (320-SCR_WIDTH)     // set this to 320-screen width 
+#define LCD_OFFSET_Y 0   // not used yet leave it to 0
+#define LCD_ROTATION 1
 
 uint8_t _xstart;
 uint8_t _ystart;
@@ -225,7 +228,7 @@ void st7789_setRotation(uint8_t which) {
 		break;
 	  case 1:
 		cmd = ST77XX_MADCTL_MY | ST77XX_MADCTL_MV | ST77XX_MADCTL_RGB;
-		_xstart = 80;
+		_xstart = SCR_OFFSET_X;  
 		_ystart = 0;
 		break;
 	  case 2:
@@ -261,13 +264,13 @@ void st7789_razmem()
     uint8_t data = 0;
     uint16_t i ;
 #if LCD_OFFSET_X != 0
-        st7789_rascaset(0x2a, 0, LCD_OFFSET_X-1, 0) ;
+        st7789_rascaset(0x2a, _xstart, _xstart+LCD_OFFSET_X-1, 0) ;
         st7789_rascaset(0x2b, 0, st7789_height-1, 0) ;
         st7789_ramwr();
         for (i=0; i<LCD_OFFSET_X*st7789_height; ++i)
             spi_write_blocking(st7789_cfg.spi, &data, 1);     
         sleep_us(1);
-        st7789_rascaset(0x2a, LCD_OFFSET_X+st7789_width, st7789_width+(2*LCD_OFFSET_X)-1, 0) ;
+        st7789_rascaset(0x2a, _xstart+LCD_OFFSET_X+st7789_width, _xstart+st7789_width+(2*LCD_OFFSET_X)-1, 0) ;
         st7789_rascaset(0x2b, 0, st7789_height - 1, 0) ;
         st7789_ramwr();
         for (i=0; i<LCD_OFFSET_X*st7789_height; ++i)

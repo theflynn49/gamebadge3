@@ -14,8 +14,8 @@ I tried these up to now :
 Important note : make sure you use my version of gameBadgePico.cpp (as of 2024/02/24), which contains a modification to make the chinese TZT screen stable.
 I pushed this mod on both my branches of this repo.
 
-The gerber files should work for PCBway (still waiting for these to arrive)
+I tested the gerber files with PCBway.
+
+This has been tested now, it works fine. 
 
 Have fun.
-
-This is pre-released, not fully tested, you have been warned.
