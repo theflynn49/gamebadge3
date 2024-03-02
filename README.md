@@ -1,3 +1,5 @@
+<b>New 2024 march 2</b> : Good news : all screens work, including the 7-pins ones ! 
+Read the details in ST7789_280x240/TFT_adapt/README.md
 
 This a a fork of BenHeck's GameBadge3 repo
 
